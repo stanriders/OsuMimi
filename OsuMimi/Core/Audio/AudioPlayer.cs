@@ -36,7 +36,8 @@ namespace OsuMimi.Core.Audio
             }
             set
             {
-                Bass.ChannelSetPosition(handle, 100);
+                var position = Bass.ChannelSeconds2Bytes(handle, value.TotalSeconds);
+                Bass.ChannelSetPosition(handle, (long)position);
             }
         }
 

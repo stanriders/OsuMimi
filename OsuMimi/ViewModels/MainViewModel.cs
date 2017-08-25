@@ -259,9 +259,11 @@ namespace OsuMimi.ViewModels
 
         private void TrackbarAction(object obj)
         {
+            var length = audioplayer.Duration.TotalMilliseconds;
+            var pos = (double)obj;
 
-
-            throw new NotImplementedException();
+            var newpos = length / 100d * pos;
+            audioplayer.Position = TimeSpan.FromMilliseconds(newpos);
         }
 
         private void BassboostAction(object obj)
