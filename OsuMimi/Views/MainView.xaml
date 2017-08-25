@@ -1,0 +1,141 @@
+﻿<Window x:Class="OsuMimi.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:OsuMimi.Controls"
+        Title="MainWindow" Height="800" Width="520" MinWidth="520" MinHeight="330"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+    <Grid Margin="10" Background="White">
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="10" Opacity=".5" RenderingBias="Performance" ShadowDepth="2"/>
+        </Grid.Effect>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="280"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        
+        <!--top grid-->
+        <Grid Grid.Row="0" Background="DarkGray">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="80"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <!--background-->
+            <Image Grid.Row="0" Grid.RowSpan="4" Source="{Binding BackgroundImage}" Stretch="UniformToFill"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <Rectangle Grid.Row="0" Grid.RowSpan="4" Fill="Black" Opacity=".2" />
+            <!--title-->
+            <Rectangle Grid.Row="0" Fill="Black" Opacity=".1" />
+            <DockPanel Grid.Row="0" Background="Transparent" MouseLeftButtonDown="DockPanel_MouseLeftButtonDown_1">
+                <Image VerticalAlignment="Center" Source="../Images/logo.png" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Width="30" Style="{StaticResource ResourceKey=TranspButton}" Click="MinimizeButtonClick">
+                        <Image Source="../Images/minBut.png" />
+                    </Button>
+                    <Button Width="30" Style="{StaticResource ResourceKey=TranspButton}" Click="CloseButtonClick">
+                        <Image Source="../Images/closeBut.png" />
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+            <!--song name-->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"/>
+                    <RowDefinition Height="1*"/>
+                </Grid.RowDefinitions>
+                
+                <Label Grid.Row="0" Content="{Binding Artist}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
+                       FontWeight="Bold" FontSize="20"/>
+                <Label Grid.Row="1" Content="{Binding Title}" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top"
+                       TextOptions.TextFormattingMode="Display"/>
+            </Grid>
+            <!--control buttons-->
+            <StackPanel Grid.Row="2" Height="76" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Width="76" Style="{StaticResource ResourceKey=TranspButton}" Command="{Binding PreviousSongCommand}">
+                    <Image Source="../Images/left.png"/>
+                </Button>
+                <Button Width="76" Style="{StaticResource ResourceKey=TranspButton}" Command="{Binding PlaySongCommand}">
+                    <Image Source="{Binding PlayButtonImage}"/>
+                </Button>
+                <Button Width="76" Style="{StaticResource ResourceKey=TranspButton}" Command="{Binding NextSongCommand}">
+                    <Image Source="../Images/right.png"/>
+                </Button>
+            </StackPanel>
+            <!--position information-->
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="26"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!--trackbar-->
+                <TextBlock Text="{Binding CurrentTime}" FontSize="16" Foreground="White" VerticalAlignment="Bottom" Margin="10,4" Width="100"
+                           HorizontalAlignment="Left" TextOptions.TextFormattingMode="Display"/>
+                <TextBlock Text="{Binding TotalTime}" FontSize="16" Foreground="White" VerticalAlignment="Bottom" Margin="10,4" Width="100"
+                           HorizontalAlignment="Right" TextOptions.TextFormattingMode="Display" TextAlignment="Right"/>
+                <local:MimiTrackbar Grid.Row="1" Margin="10,0,10,0" Height="4">
+                    <local:MimiTrackbar.Triggers>
+                        <EventTrigger RoutedEvent="MouseEnter">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation To="16" Storyboard.TargetProperty="Height" Duration="0:0:0.15" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="MouseLeave">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation To="4" Storyboard.TargetProperty="Height"/>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                    </local:MimiTrackbar.Triggers>
+                </local:MimiTrackbar>
+            </Grid>
+        </Grid>
+        
+        <!--playlist-->
+        <ListBox Grid.Row="1" BorderThickness="0" Style="{StaticResource PlaylistBoxStyle}" ItemsSource="{Binding PlaylistItems}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <VirtualizingStackPanel VirtualizationMode="Recycling">
+                        <Grid Height="50">
+                            <Label VerticalAlignment="Top" Content="{Binding Path=Title}" FontSize="14"  />
+                            <Label VerticalAlignment="Bottom" Foreground="DarkGray" Content="{Binding Path=Artist}" FontSize="12" />
+                        </Grid>
+                    </VirtualizingStackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!--footer-->
+        <StackPanel Grid.Row="3" Orientation="Horizontal">
+            <local:MimiButton Picture="../Images/search.png" SaveState="True" Width="30" MouseLeftButtonDown="SearchButton_MouseLeftButtonDown"
+                              Command="{Binding SearchCommand}"/>
+            <local:MimiButton Picture="../Images/random.png" SaveState="True" Width="30" Command="{Binding RandomCommand}"/>
+            <local:MimiButton Picture="../Images/doubletime.png" SaveState="True" Width="30" Command="{Binding DoubleTimeCommand}"/>
+            <local:MimiButton Picture="../Images/nightcore.png" SaveState="True" Width="30" Command="{Binding NightcoreCommand}"/>
+            <local:MimiButton Picture="../Images/bassboost.png" SaveState="True" Width="30" Command="{Binding BassboostCommand}"/>
+            <local:MimiButton Picture="../Images/info.png" Width="30" Command="{Binding InfoCommand}" />
+        </StackPanel>
+
+        <!--search-->
+        <Grid x:Name="searchGrid" Grid.Row="3" Background="White" Margin="30,0,0,0" Visibility="Hidden">
+            <Label x:Name="searchLabel" Content="Search" Foreground="Gray" FontSize="14pt" HorizontalAlignment="Left" VerticalAlignment="Center"
+                   TextOptions.TextFormattingMode="Display"/>
+            <TextBox x:Name="searchTextBox" FontSize="14pt" UndoLimit="0" BorderThickness="0" SelectionBrush="#FFA4A4A4" VerticalContentAlignment="Center"
+                     Background="Transparent" TextOptions.TextFormattingMode="Display" IsEnabled="False" TextChanged="searchTextBox_TextChanged" />
+        </Grid>
+        
+        <!--resize corner-->
+        <Image Grid.Row="3" Width="11" Height="11" HorizontalAlignment="Right" VerticalAlignment="Bottom" Source="../Images/resizeGrip.png"
+               Cursor="SizeNWSE" PreviewMouseDown="Image_PreviewMouseDown_1"/>
+        
+    </Grid>
+</Window>
