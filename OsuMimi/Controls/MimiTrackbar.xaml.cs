@@ -16,9 +16,6 @@ namespace OsuMimi.Controls
 
         static DependencyProperty ProgressProperty = DependencyProperty.Register("Progress", typeof(double), typeof(MimiTrackbar));
 
-        static RoutedEvent ProgressChangedEvent = EventManager.RegisterRoutedEvent("ProgressChanged", RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler), typeof(MimiTrackbar));
-
         public double Progress
         {
             get { return (double)GetValue(ProgressProperty); }
@@ -27,24 +24,6 @@ namespace OsuMimi.Controls
                 SetValue(ProgressProperty, value);
                 SetProgress(value);
             }
-        }
-
-        public event RoutedEventHandler ProgressChanged
-        {
-            add
-            {
-                AddHandler(ProgressChangedEvent, value);
-            }
-            remove
-            {
-                RemoveHandler(ProgressChangedEvent, value);
-            }
-        }
-
-        void RaiseProgressChangedEvent()
-        {
-            var args = new RoutedEventArgs(ProgressChangedEvent);
-            RaiseEvent(args);
         }
 
         private void SetProgress(double progress)
@@ -59,14 +38,12 @@ namespace OsuMimi.Controls
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Progress = e.GetPosition(this).X / this.ActualWidth * 100d;
-                RaiseProgressChangedEvent();
             }
         }
 
         private void layoutGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Progress = e.GetPosition(this).X / this.ActualWidth * 100d;
-            RaiseProgressChangedEvent();
         }
     }
 }

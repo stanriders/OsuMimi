@@ -2,6 +2,7 @@
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/nyawk/OsuMimi/master/LICENSE
 
 using System;
+using System.IO;
 using System.Windows.Media.Imaging;
 
 namespace OsuMimi.Helpers
@@ -41,6 +42,38 @@ namespace OsuMimi.Helpers
             image.EndInit();
 
             return image;
+        }
+
+        public static string GetBackgroundName(string osuFile)
+        {
+            if (!File.Exists(osuFile))
+            {
+                return string.Empty;
+            }
+
+            using (var stream = new FileStream(osuFile, FileMode.Open, FileAccess.Read))
+            {
+                var reader = new StreamReader(stream);
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (line.StartsWith("0,"))
+                    {
+                        if (line.Contains(@".jpg""") || line.Contains(@".png"""))
+                        {
+                            var split = line.Split('"');
+                            return split[1].Trim();
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+
+            // default value
+            return string.Empty;
         }
     }
 }

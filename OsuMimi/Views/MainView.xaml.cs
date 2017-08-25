@@ -30,7 +30,8 @@ namespace OsuMimi
 
         private void CloseButtonClick(object sender, RoutedEventArgs e)
         {
-            Application.Current.Shutdown();
+            //Application.Current.Shutdown();
+            progprog.Progress = 50d;
         }
 
         private void MinimizeButtonClick(object sender, RoutedEventArgs e)

@@ -26,6 +26,7 @@ namespace OsuMimi.ViewModels
         private string title;
         private string currentTime;
         private string totalTime;
+        private double progress;
         private ImageSource playButtonImage;
         private ImageSource backgroundImage;
 
@@ -78,6 +79,19 @@ namespace OsuMimi.ViewModels
             {
                 totalTime = value;
                 OnPropertyChanged("TotalTime");
+            }
+        }
+
+        /// <summary>
+        /// Текущая позиция
+        /// </summary>
+        public double Ptest
+        {
+            get { return progress; }
+            set
+            {
+                progress = value;
+                OnPropertyChanged("Progress");
             }
         }
 
@@ -167,9 +181,32 @@ namespace OsuMimi.ViewModels
             LoadCommands();
             LoadPlaylist();
             audioplayer = new AudioPlayer();
+            audioplayer.OnTrackEnd += audioplayer_OnTrackEnd;
             audioplayer.Initialize();
+            SetUpdateTimer();
+        }
 
-            BackgroundImage = ImageHelper.LoadFromFile(@"C:\Users\nyan\Desktop\photo_2017-08-16_16-48-42.jpg");
+        private void SetUpdateTimer()
+        {
+            var timer = new System.Windows.Threading.DispatcherTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(250);
+            timer.Tick += (e, s) =>
+            {
+                if (audioplayer.Status != PlayerStatus.Play)
+                    return;
+
+                var pos = audioplayer.Position;
+                var length = audioplayer.Duration;
+
+                CurrentTime = pos.ToString(@"hh\:mm\:ss");
+                double p = pos.TotalMilliseconds / length.TotalMilliseconds * 100d;
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Ptest = p;
+                });
+            };
+            timer.Start();
         }
 
         private void LoadCommands()
@@ -216,11 +253,7 @@ namespace OsuMimi.ViewModels
         private void TrackSelected(object obj)
         {
             var item = (PlaylistItem)obj;
-
-            Artist = item.Artist;
-            Title = item.Title;
-            audioplayer.OpenFile(Helpers.PathHelper.SCombine(item.Directory, item.Audiofile));
-            audioplayer.Play();
+            PlaySong(item);
         }
 
         private void BassboostAction(object obj)
@@ -241,6 +274,24 @@ namespace OsuMimi.ViewModels
         private void RandomAction(object obj)
         {
             throw new NotImplementedException();
+        }
+
+        void audioplayer_OnTrackEnd(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void PlaySong(PlaylistItem song)
+        {
+            Artist = song.Artist;
+            Title = song.Title;
+            audioplayer.OpenFile(Helpers.PathHelper.SCombine(song.Directory, song.Audiofile));
+            audioplayer.Play();
+            PlayButtonImage = ImageHelper.LoadFromAssembly("pause.png");
+            string bgFile = ImageHelper.GetBackgroundName(PathHelper.SCombine(song.Directory, song.OsuFile));
+            if (System.IO.File.Exists(PathHelper.SCombine(song.Directory, bgFile)))
+                BackgroundImage = ImageHelper.LoadFromFile(PathHelper.SCombine(song.Directory, bgFile));
+            TotalTime = audioplayer.Duration.ToString(@"hh\:mm\:ss");
         }
 
         private void LoadPlaylist()

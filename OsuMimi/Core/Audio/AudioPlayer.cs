@@ -22,14 +22,22 @@ namespace OsuMimi.Core.Audio
         {
             get
             {
-                return TimeSpan.Zero;
+                var seconds = Bass.ChannelBytes2Seconds(handle, Bass.ChannelGetLength(handle));
+                return TimeSpan.FromSeconds(seconds);
             }
         }
 
         public TimeSpan Position
         {
-            get;
-            set;
+            get
+            {
+                var seconds = Bass.ChannelBytes2Seconds(handle, Bass.ChannelGetPosition(handle));
+                return TimeSpan.FromSeconds(seconds);
+            }
+            set
+            {
+
+            }
         }
 
         public PlayerStatus Status
