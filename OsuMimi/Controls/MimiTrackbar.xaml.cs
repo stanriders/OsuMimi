@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017-2017 nyan [http://github.com/nyawk]
+﻿// Copyright (c) 2016-2017 nyan [http://github.com/nyawk]
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/nyawk/OsuMimi/master/LICENSE
 
 using System.Windows;
@@ -14,36 +14,59 @@ namespace OsuMimi.Controls
             InitializeComponent();
         }
 
-        static DependencyProperty ProgressProperty = DependencyProperty.Register("Progress", typeof(double), typeof(MimiTrackbar));
-
-        public double Progress
-        {
-            get { return (double)GetValue(ProgressProperty); }
-            set
+        // Using a DependencyProperty as the backing store for Position.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty PositionProperty = DependencyProperty.Register(
+            "Position",
+            typeof(double),
+            typeof(MimiTrackbar),
+            new PropertyMetadata
             {
-                SetValue(ProgressProperty, value);
-                SetProgress(value);
+                DefaultValue = 0d,
+                PropertyChangedCallback = new PropertyChangedCallback(PositionChangedCallback)
             }
+        );
+
+        // Using a DependencyProperty as the backing store for Command.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register("Command", typeof(ICommand), typeof(MimiTrackbar), new PropertyMetadata(null));
+
+        public double Position
+        {
+            get { return (double)GetValue(PositionProperty); }
+            set { SetValue(PositionProperty, value); }
         }
 
-        private void SetProgress(double progress)
+        private static void PositionChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            double perc = this.ActualWidth / 100d;
-            double prog = progress * perc;
-            this.progressRectangle.Width = prog;
+            var obj = (MimiTrackbar)d;
+
+            double maxValue = obj.ActualWidth;
+            double value = (double)e.NewValue;
+            value = (value <= 100d) ? ((value >= 0d) ? value : 0d) : 100d;
+
+            var width = maxValue / 100d * value;
+            obj.progressRectangle.Width = width;
         }
+
+        public ICommand Command
+        {
+            get { return (ICommand)GetValue(CommandProperty); }
+            set { SetValue(CommandProperty, value); }
+        }        
 
         private void layoutGrid_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                Progress = e.GetPosition(this).X / this.ActualWidth * 100d;
+                double position = e.GetPosition(this).X / this.ActualWidth * 100d;
+                Command.Execute(position);
             }
         }
 
         private void layoutGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Progress = e.GetPosition(this).X / this.ActualWidth * 100d;
+            double position = e.GetPosition(this).X / this.ActualWidth * 100d;
+            Command.Execute(position);
         }
     }
 }

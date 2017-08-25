@@ -45,7 +45,7 @@
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
                 </Grid.RowDefinitions>
-                
+
                 <Label Grid.Row="0" Content="{Binding Artist}" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"
                        FontWeight="Bold" FontSize="20"/>
                 <Label Grid.Row="1" Content="{Binding Title}" Foreground="White" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Top"
@@ -75,7 +75,7 @@
                            HorizontalAlignment="Left" TextOptions.TextFormattingMode="Display"/>
                 <TextBlock Text="{Binding TotalTime}" FontSize="16" Foreground="White" VerticalAlignment="Bottom" Margin="10,4" Width="100"
                            HorizontalAlignment="Right" TextOptions.TextFormattingMode="Display" TextAlignment="Right"/>
-                <local:MimiTrackbar x:Name="progprog" Grid.Row="1" Margin="10,0,10,0" Height="4" Progress="{Binding Ptest}">
+                <local:MimiTrackbar Grid.Row="1" Margin="10,0,10,0" Height="4" Position="{Binding CurrentPosition, Mode=TwoWay}" Command="{Binding TrackbarCommand}">
                     <local:MimiTrackbar.Triggers>
                         <EventTrigger RoutedEvent="MouseEnter">
                             <EventTrigger.Actions>

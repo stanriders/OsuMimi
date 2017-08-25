@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017-2017 nyan [http://github.com/nyawk]
+﻿// Copyright (c) 2016-2017 nyan [http://github.com/nyawk]
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/nyawk/OsuMimi/master/LICENSE
 
 using System;
@@ -36,7 +36,7 @@ namespace OsuMimi.Core.Audio
             }
             set
             {
-
+                Bass.ChannelSetPosition(handle, 100);
             }
         }
 

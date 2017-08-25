@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017-2017 nyan [http://github.com/nyawk]
+﻿// Copyright (c) 2016-2017 nyan [http://github.com/nyawk]
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/nyawk/OsuMimi/master/LICENSE
 
 using System;
@@ -30,8 +30,7 @@ namespace OsuMimi
 
         private void CloseButtonClick(object sender, RoutedEventArgs e)
         {
-            //Application.Current.Shutdown();
-            progprog.Progress = 50d;
+            Application.Current.Shutdown();
         }
 
         private void MinimizeButtonClick(object sender, RoutedEventArgs e)

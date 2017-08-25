@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017-2017 nyan [http://github.com/nyawk]
+﻿// Copyright (c) 2016-2017 nyan [http://github.com/nyawk]
 // Licensed under the MIT Licence - https://raw.githubusercontent.com/nyawk/OsuMimi/master/LICENSE
 
 using System;
@@ -26,7 +26,7 @@ namespace OsuMimi.ViewModels
         private string title;
         private string currentTime;
         private string totalTime;
-        private double progress;
+        private double currentPosition;
         private ImageSource playButtonImage;
         private ImageSource backgroundImage;
 
@@ -85,13 +85,13 @@ namespace OsuMimi.ViewModels
         /// <summary>
         /// Текущая позиция
         /// </summary>
-        public double Ptest
+        public double CurrentPosition
         {
-            get { return progress; }
+            get { return currentPosition; }
             set
             {
-                progress = value;
-                OnPropertyChanged("Progress");
+                currentPosition = value;
+                OnPropertyChanged("CurrentPosition");
             }
         }
 
@@ -146,6 +146,8 @@ namespace OsuMimi.ViewModels
         /// </summary>
         public RelayCommand TrackSelectedCommand { get; set; }
 
+        public RelayCommand TrackbarCommand { get; set; }
+
         /// <summary>
         /// Поиск
         /// </summary>
@@ -199,12 +201,9 @@ namespace OsuMimi.ViewModels
                 var length = audioplayer.Duration;
 
                 CurrentTime = pos.ToString(@"hh\:mm\:ss");
-                double p = pos.TotalMilliseconds / length.TotalMilliseconds * 100d;
+                double proc = pos.TotalMilliseconds / length.TotalMilliseconds * 100d;
 
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Ptest = p;
-                });
+                CurrentPosition = proc;
             };
             timer.Start();
         }
@@ -216,6 +215,7 @@ namespace OsuMimi.ViewModels
             NextSongCommand = new RelayCommand(NextSongAction);
             PlaySongCommand = new RelayCommand(PlaySongAction);
             TrackSelectedCommand = new RelayCommand(TrackSelected);
+            TrackbarCommand = new RelayCommand(TrackbarAction);
             RandomCommand = new RelayCommand(RandomAction);
             DoubleTimeCommand = new RelayCommand(DoubleTimeAction);
             NightcoreCommand = new RelayCommand(NightcoreAction);
@@ -229,7 +229,8 @@ namespace OsuMimi.ViewModels
 
         private void NextSongAction(object obj)
         {
-            throw new NotImplementedException();
+            CurrentPosition = 75d;
+            //throw new NotImplementedException();
         }
 
         private void PlaySongAction(object obj)
@@ -254,6 +255,13 @@ namespace OsuMimi.ViewModels
         {
             var item = (PlaylistItem)obj;
             PlaySong(item);
+        }
+
+        private void TrackbarAction(object obj)
+        {
+
+
+            throw new NotImplementedException();
         }
 
         private void BassboostAction(object obj)
