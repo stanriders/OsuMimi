@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿// Copyright (c) 2017-2017 nyan [http://github.com/nyawk]
+// Licensed under the MIT Licence - https://raw.githubusercontent.com/nyawk/OsuMimi/master/LICENSE
+
+using System.Collections.Generic;
 using System.IO;
 
 namespace OsuMimi.Core.OsuDatabase
