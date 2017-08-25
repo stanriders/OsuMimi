@@ -11,9 +11,16 @@ namespace OsuMimi.Core.Audio
 {
     class AudioPlayer : IDisposable
     {
+        private int handle;
+
+        private PlayerStatus status;
+
         public TimeSpan Duration
         {
-            get;
+            get
+            {
+                return TimeSpan.Zero;
+            }
         }
 
         public TimeSpan Position
@@ -24,7 +31,10 @@ namespace OsuMimi.Core.Audio
 
         public PlayerStatus Status
         {
-            get;
+            get
+            {
+                return status;
+            }
         }
 
         public bool DoubleTime
@@ -47,32 +57,51 @@ namespace OsuMimi.Core.Audio
 
         public void Initialize()
         {
-
+            Bass.Init();
         }
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Bass.Free();
         }
 
         public void OpenFile(string filePath)
         {
-            throw new NotImplementedException();
+            Bass.StreamFree(handle);
+            handle = Bass.CreateStream(filePath);
+            status = PlayerStatus.FileLoaded;
         }
 
         public void Play()
         {
-            throw new NotImplementedException();
+            switch (Status)
+            {
+                case PlayerStatus.NoFile:
+                    break;
+                case PlayerStatus.FileLoaded:
+                    Bass.ChannelPlay(handle, true);
+                    status = PlayerStatus.Play;
+                    break;
+                case PlayerStatus.Pause:
+                    Bass.ChannelPlay(handle, false);
+                    status = PlayerStatus.Play;
+                    break;
+            }
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            Bass.ChannelStop(handle);
+            status = PlayerStatus.FileLoaded;
         }
 
         public void Pause()
         {
-            throw new NotImplementedException();
+            if (Status == PlayerStatus.Play)
+            {
+                Bass.ChannelPause(handle);
+                status = PlayerStatus.Pause;
+            }
         }
 
         public event EventHandler OnTrackEnd;

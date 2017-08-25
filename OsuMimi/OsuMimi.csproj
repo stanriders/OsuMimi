@@ -72,6 +72,7 @@
       <DependentUpon>MimiTrackbar.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Audio\AudioPlayer.cs" />
+    <Compile Include="Core\Audio\PlayerStatus.cs" />
     <Compile Include="Core\Configuration\MimiConfig.cs" />
     <Compile Include="Core\Configuration\Settings.cs" />
     <Compile Include="Core\OsuDatabase\BeatmapInformation.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="Core\OsuDatabase\StarRating.cs" />
     <Compile Include="Core\OsuDatabase\TimingPoint.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
+    <Compile Include="Helpers\Indexer.cs" />
     <Compile Include="Helpers\PathHelper.cs" />
     <Compile Include="Models\PlaylistItem.cs" />
     <Compile Include="MVVM\RelayCommand.cs" />

@@ -101,7 +101,7 @@
         </Grid>
         
         <!--playlist-->
-        <ListBox Grid.Row="1" BorderThickness="0" Style="{StaticResource PlaylistBoxStyle}" ItemsSource="{Binding PlaylistItems}">
+        <ListBox Grid.Row="1" BorderThickness="0" Style="{StaticResource PlaylistBoxStyle}" ItemsSource="{Binding PlaylistItems}" MouseDoubleClick="ListBox_MouseDoubleClick_1"  >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <VirtualizingStackPanel VirtualizationMode="Recycling">

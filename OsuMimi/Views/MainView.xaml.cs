@@ -49,5 +49,16 @@ namespace OsuMimi
         {
             searchLabel.Visibility = searchTextBox.Text.Length > 0 ? System.Windows.Visibility.Hidden : System.Windows.Visibility.Visible;
         }
+
+        private void ListBox_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
+        {
+            var model = (MainViewModel)this.DataContext;
+            var listbox = (ListBox)sender;
+
+            if (model == null || listbox.SelectedItem == null)
+                return;
+            if (model.TrackSelectedCommand.CanExecute(listbox.SelectedItem))
+                model.TrackSelectedCommand.Execute(listbox.SelectedItem);
+        }
     }
 }

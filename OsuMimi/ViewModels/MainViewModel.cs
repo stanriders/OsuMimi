@@ -10,6 +10,7 @@ using OsuMimi.Core.Audio;
 using OsuMimi.Helpers;
 using OsuMimi.Core.OsuDatabase;
 using OsuMimi.Models;
+using System.Windows;
 
 namespace OsuMimi.ViewModels
 {
@@ -124,6 +125,11 @@ namespace OsuMimi.ViewModels
         public RelayCommand PlaySongCommand { get; set; }
 
         /// <summary>
+        /// Выбран трек (двойным кликом)
+        /// </summary>
+        public RelayCommand TrackSelectedCommand { get; set; }
+
+        /// <summary>
         /// Поиск
         /// </summary>
         public RelayCommand SearchCommand { get; set; }
@@ -169,11 +175,13 @@ namespace OsuMimi.ViewModels
             PreviousSongCommand = new RelayCommand(PreviousSongAction);
             NextSongCommand = new RelayCommand(NextSongAction);
             PlaySongCommand = new RelayCommand(PlaySongAction);
+            TrackSelectedCommand = new RelayCommand(TrackSelected);
             RandomCommand = new RelayCommand(RandomAction);
             DoubleTimeCommand = new RelayCommand(DoubleTimeAction);
             NightcoreCommand = new RelayCommand(NightcoreAction);
             BassboostCommand = new RelayCommand(BassboostAction);
         }
+
         private void PreviousSongAction(object obj)
         {
             throw new NotImplementedException();
@@ -200,6 +208,16 @@ namespace OsuMimi.ViewModels
                 audioplayer.Pause();
                 PlayButtonImage = ImageHelper.LoadFromAssembly("play.png");
             }
+        }
+
+        private void TrackSelected(object obj)
+        {
+            var item = (PlaylistItem)obj;
+
+            Artist = item.Artist;
+            Title = item.Title;
+            audioplayer.OpenFile(Helpers.PathHelper.SCombine(item.Directory, item.Audiofile));
+            audioplayer.Play();
         }
 
         private void BassboostAction(object obj)
