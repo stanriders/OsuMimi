@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using ManagedBass;
 using ManagedBass.Fx;
+using ManagedBass.DirectX8;
 
 namespace OsuMimi.Core.Audio
 {
@@ -27,6 +28,8 @@ namespace OsuMimi.Core.Audio
         private bool doubletime;
         private bool nightcore;
         private bool bassboost;
+        // эффекты
+        private int fx1, fx2;
 
         public TimeSpan Duration
         {
@@ -77,8 +80,12 @@ namespace OsuMimi.Core.Audio
 
         public bool Bassboost
         {
-            get;
-            set;
+            get { return bassboost; }
+            set
+            {
+                bassboost = value;
+                ApplyBassboost();
+            }
         }
 
         public void Initialize()
@@ -100,8 +107,10 @@ namespace OsuMimi.Core.Audio
             activeHandle = BassFx.TempoCreate(streamHandle, BassFlags.FxFreeSource);
 
             Bass.ChannelSetAttribute(activeHandle, ChannelAttribute.TempoUseQuickAlgorithm, 1);
+            ApplyEffects();
 
             status = PlayerStatus.FileLoaded;
+            ApplyBassboost();
         }
 
         public void Play()
@@ -148,6 +157,12 @@ namespace OsuMimi.Core.Audio
             }
         }
 
+        private void ApplyEffects()
+        {
+            ApplyDoubletime();
+            ApplyBassboost();
+        }
+
         private void ApplyDoubletime()
         {
             Bass.ChannelSetAttribute(activeHandle, ChannelAttribute.Tempo, doubletime ? 50 : 0);
@@ -155,7 +170,26 @@ namespace OsuMimi.Core.Audio
 
         private void ApplyBassboost()
         {
+            Bass.ChannelRemoveFX(activeHandle, fx1);
+            Bass.ChannelRemoveFX(activeHandle, fx2);
+            Bass.FXReset(activeHandle);
 
+            if (bassboost)
+            {
+                var parameters = new DXParamEQParameters
+                {
+                    fBandwidth = 24f,
+                    fCenter = 80f,
+                    fGain = 15f
+                };
+
+                fx1 = Bass.ChannelSetFX(activeHandle, EffectType.DXParamEQ, -1);
+                Bass.FXSetParameters(fx1, parameters);
+
+                parameters.fCenter = 100f;
+                fx2 = Bass.ChannelSetFX(activeHandle, EffectType.DXParamEQ, -1);
+                Bass.FXSetParameters(fx2, parameters);
+            }
         }
     }
 }

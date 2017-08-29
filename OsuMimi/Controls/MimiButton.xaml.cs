@@ -74,12 +74,12 @@ namespace OsuMimi.Controls
         {
             if (Command != null && Command.CanExecute(null))
             {
-                Command.Execute(null);
                 if (SaveState)
                 {
                     isDown = !isDown;
                     backgroundRectangle.Fill = (isDown) ? new SolidColorBrush(Color.FromArgb(0xFF, 0xBD, 0xBD, 0xBD)) : Brushes.White;
                 }
+                Command.Execute(isDown);
             }
         }
     }

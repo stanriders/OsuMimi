@@ -146,6 +146,9 @@ namespace OsuMimi.ViewModels
         /// </summary>
         public RelayCommand TrackSelectedCommand { get; set; }
 
+        /// <summary>
+        /// Клик по трекбару
+        /// </summary>
         public RelayCommand TrackbarCommand { get; set; }
 
         /// <summary>
@@ -229,8 +232,7 @@ namespace OsuMimi.ViewModels
 
         private void NextSongAction(object obj)
         {
-            CurrentPosition = 75d;
-            //throw new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         private void PlaySongAction(object obj)
@@ -268,7 +270,8 @@ namespace OsuMimi.ViewModels
 
         private void BassboostAction(object obj)
         {
-            throw new NotImplementedException();
+            var isdown = (bool)obj;
+            audioplayer.Bassboost = isdown;
         }
 
         private void NightcoreAction(object obj)
@@ -278,7 +281,8 @@ namespace OsuMimi.ViewModels
 
         private void DoubleTimeAction(object obj)
         {
-            throw new NotImplementedException();
+            var isdown = (bool)obj;
+            audioplayer.DoubleTime = isdown;
         }
 
         private void RandomAction(object obj)
