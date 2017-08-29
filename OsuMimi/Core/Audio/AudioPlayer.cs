@@ -14,15 +14,25 @@ namespace OsuMimi.Core.Audio
 {
     class AudioPlayer : IDisposable
     {
-        private int handle;
+        // the handle for this track
+        private int activeHandle;
 
+        // the handle for applying effects
+        private int streamHandle;
+
+        // статус плеера
         private PlayerStatus status;
+
+        // режимы
+        private bool doubletime;
+        private bool nightcore;
+        private bool bassboost;
 
         public TimeSpan Duration
         {
             get
             {
-                var seconds = Bass.ChannelBytes2Seconds(handle, Bass.ChannelGetLength(handle));
+                var seconds = Bass.ChannelBytes2Seconds(activeHandle, Bass.ChannelGetLength(activeHandle));
                 return TimeSpan.FromSeconds(seconds);
             }
         }
@@ -31,13 +41,13 @@ namespace OsuMimi.Core.Audio
         {
             get
             {
-                var seconds = Bass.ChannelBytes2Seconds(handle, Bass.ChannelGetPosition(handle));
+                var seconds = Bass.ChannelBytes2Seconds(activeHandle, Bass.ChannelGetPosition(activeHandle));
                 return TimeSpan.FromSeconds(seconds);
             }
             set
             {
-                var position = Bass.ChannelSeconds2Bytes(handle, value.TotalSeconds);
-                Bass.ChannelSetPosition(handle, (long)position);
+                var position = Bass.ChannelSeconds2Bytes(activeHandle, value.TotalSeconds);
+                Bass.ChannelSetPosition(activeHandle, (long)position);
             }
         }
 
@@ -51,8 +61,12 @@ namespace OsuMimi.Core.Audio
 
         public bool DoubleTime
         {
-            get;
-            set;
+            get { return doubletime; }
+            set
+            {
+                doubletime = value;
+                ApplyDoubletime();
+            }
         }
 
         public bool Nightcore
@@ -74,13 +88,19 @@ namespace OsuMimi.Core.Audio
 
         public void Dispose()
         {
+            Unload();
             Bass.Free();
         }
 
         public void OpenFile(string filePath)
         {
-            Bass.StreamFree(handle);
-            handle = Bass.CreateStream(filePath);
+            Unload();
+
+            streamHandle = Bass.CreateStream(filePath, Flags: BassFlags.Decode | BassFlags.Prescan);
+            activeHandle = BassFx.TempoCreate(streamHandle, BassFlags.FxFreeSource);
+
+            Bass.ChannelSetAttribute(activeHandle, ChannelAttribute.TempoUseQuickAlgorithm, 1);
+
             status = PlayerStatus.FileLoaded;
         }
 
@@ -91,11 +111,11 @@ namespace OsuMimi.Core.Audio
                 case PlayerStatus.NoFile:
                     break;
                 case PlayerStatus.FileLoaded:
-                    Bass.ChannelPlay(handle, true);
+                    Bass.ChannelPlay(activeHandle, true);
                     status = PlayerStatus.Play;
                     break;
                 case PlayerStatus.Pause:
-                    Bass.ChannelPlay(handle, false);
+                    Bass.ChannelPlay(activeHandle, false);
                     status = PlayerStatus.Play;
                     break;
             }
@@ -103,7 +123,7 @@ namespace OsuMimi.Core.Audio
 
         public void Stop()
         {
-            Bass.ChannelStop(handle);
+            Bass.ChannelStop(activeHandle);
             status = PlayerStatus.FileLoaded;
         }
 
@@ -111,11 +131,31 @@ namespace OsuMimi.Core.Audio
         {
             if (Status == PlayerStatus.Play)
             {
-                Bass.ChannelPause(handle);
+                Bass.ChannelPause(activeHandle);
                 status = PlayerStatus.Pause;
             }
         }
 
         public event EventHandler OnTrackEnd;
+
+        private void Unload()
+        {
+            if (activeHandle != 0)
+            {
+                Bass.ChannelStop(activeHandle);
+                Bass.StreamFree(activeHandle);
+                activeHandle = 0;
+            }
+        }
+
+        private void ApplyDoubletime()
+        {
+            Bass.ChannelSetAttribute(activeHandle, ChannelAttribute.Tempo, doubletime ? 50 : 0);
+        }
+
+        private void ApplyBassboost()
+        {
+
+        }
     }
 }
