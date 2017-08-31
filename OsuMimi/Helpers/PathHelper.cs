@@ -68,6 +68,21 @@ namespace OsuMimi.Helpers
             return result;
         }
 
+        /// <summary>
+        /// Получает путь к директории с логами программы
+        /// </summary>
+        /// <returns>Путь к директории с логами</returns>
+        public static string GetLogsPath()
+        {
+            var path = GetMimiPath();
+            var logsPath = Path.Combine(path, "Logs");
+            if (!Directory.Exists(logsPath))
+            {
+                Directory.CreateDirectory(logsPath);
+            }
+            return logsPath;
+        }
+
         private static string CombineWith(string basePath, params string[] paths)
         {
             char separator = Path.DirectorySeparatorChar;

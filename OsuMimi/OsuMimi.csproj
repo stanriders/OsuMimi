@@ -80,9 +80,11 @@
     <Compile Include="Core\OsuDatabase\OsuDatabase.cs" />
     <Compile Include="Core\OsuDatabase\StarRating.cs" />
     <Compile Include="Core\OsuDatabase\TimingPoint.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Helpers\Indexer.cs" />
     <Compile Include="Helpers\PathHelper.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Models\PlaylistItem.cs" />
     <Compile Include="MVVM\RelayCommand.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
@@ -163,9 +165,7 @@
     <Resource Include="Images\play.png" />
     <Resource Include="Images\right.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extensions\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Images\logo.png" />
   </ItemGroup>

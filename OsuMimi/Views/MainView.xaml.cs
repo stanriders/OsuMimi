@@ -6,6 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using OsuMimi.ViewModels;
+using System.Windows.Threading;
+using OsuMimi.Extensions;
 
 namespace OsuMimi
 {
@@ -14,7 +16,24 @@ namespace OsuMimi
         public MainWindow()
         {
             InitializeComponent();
+            Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
             this.DataContext = new MainViewModel();
+        }
+
+        void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show
+            (
+               "Fatal error: {0}".Fmt(e.Exception.Message),
+               "FATAL ERROR",
+               MessageBoxButton.OK,
+               MessageBoxImage.Error
+            );
+
+            e.Handled = true;
+
+            Logger.LogFatal(e.Exception);
+            Environment.Exit(0);
         }
 
         private void DockPanel_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
@@ -35,7 +54,7 @@ namespace OsuMimi
 
         private void MinimizeButtonClick(object sender, RoutedEventArgs e)
         {
-            this.WindowState = System.Windows.WindowState.Minimized;
+            this.WindowState = WindowState.Minimized;
         }
 
         private void SearchButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -43,14 +62,14 @@ namespace OsuMimi
             var button = sender as OsuMimi.Controls.MimiButton;
             if (button != null)
             {
-                searchGrid.Visibility = button.IsDown ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+                searchGrid.Visibility = button.IsDown ? Visibility.Visible : Visibility.Hidden;
                 searchTextBox.IsEnabled = button.IsDown;
             }
         }
 
         private void searchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            searchLabel.Visibility = searchTextBox.Text.Length > 0 ? System.Windows.Visibility.Hidden : System.Windows.Visibility.Visible;
+            searchLabel.Visibility = searchTextBox.Text.Length > 0 ? Visibility.Hidden : Visibility.Visible;
         }
 
         private void ListBox_MouseDoubleClick_1(object sender, MouseButtonEventArgs e)
