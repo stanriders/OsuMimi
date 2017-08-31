@@ -186,7 +186,7 @@ namespace OsuMimi.ViewModels
             LoadCommands();
             LoadPlaylist();
             audioplayer = new AudioPlayer();
-            audioplayer.OnTrackEnd += audioplayer_OnTrackEnd;
+            audioplayer.OnTrackEnded += audioplayer_OnTrackEnd;
             audioplayer.Initialize();
             SetUpdateTimer();
         }

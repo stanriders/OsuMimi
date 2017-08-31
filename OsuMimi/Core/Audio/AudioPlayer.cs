@@ -30,6 +30,8 @@ namespace OsuMimi.Core.Audio
         private bool bassboost;
         // эффекты
         private int fx1, fx2, fx3;
+        // sync handle
+        private int syncHandle;
 
         public TimeSpan Duration
         {
@@ -110,6 +112,7 @@ namespace OsuMimi.Core.Audio
             streamHandle = Bass.CreateStream(filePath, Flags: BassFlags.Decode | BassFlags.Prescan);
             activeHandle = BassFx.TempoCreate(streamHandle, BassFlags.FxFreeSource);
 
+            syncHandle = Bass.ChannelSetSync(activeHandle, SyncFlags.End, 0, SyncProcedureEndStream);
             Bass.ChannelSetAttribute(activeHandle, ChannelAttribute.TempoUseQuickAlgorithm, 1);
             ApplyEffects();
 
@@ -148,10 +151,16 @@ namespace OsuMimi.Core.Audio
             }
         }
 
-        public event EventHandler OnTrackEnd;
+        public event EventHandler OnTrackEnded;
 
         private void Unload()
         {
+            if (syncHandle != 0)
+            {
+                Bass.ChannelRemoveSync(activeHandle, syncHandle);
+                syncHandle = 0;
+            }
+
             if (activeHandle != 0)
             {
                 Bass.ChannelStop(activeHandle);
@@ -216,6 +225,14 @@ namespace OsuMimi.Core.Audio
                 parameters.fCenter = 100f;
                 fx2 = Bass.ChannelSetFX(activeHandle, EffectType.DXParamEQ, -1);
                 Bass.FXSetParameters(fx2, parameters);
+            }
+        }
+
+        protected void SyncProcedureEndStream(int handle, int channel, int data, IntPtr user)
+        {
+            if (OnTrackEnded != null)
+            {
+                OnTrackEnded(this, EventArgs.Empty);
             }
         }
     }
