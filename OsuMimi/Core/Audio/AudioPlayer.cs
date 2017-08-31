@@ -29,7 +29,7 @@ namespace OsuMimi.Core.Audio
         private bool nightcore;
         private bool bassboost;
         // эффекты
-        private int fx1, fx2;
+        private int fx1, fx2, fx3;
 
         public TimeSpan Duration
         {
@@ -74,8 +74,12 @@ namespace OsuMimi.Core.Audio
 
         public bool Nightcore
         {
-            get;
-            set;
+            get { return nightcore; }
+            set
+            {
+                nightcore = value;
+                ApplyNightcore();
+            }
         }
 
         public bool Bassboost
@@ -110,7 +114,6 @@ namespace OsuMimi.Core.Audio
             ApplyEffects();
 
             status = PlayerStatus.FileLoaded;
-            ApplyBassboost();
         }
 
         public void Play()
@@ -159,13 +162,37 @@ namespace OsuMimi.Core.Audio
 
         private void ApplyEffects()
         {
+            // TODO: fix overlaps
             ApplyDoubletime();
+            ApplyNightcore();
             ApplyBassboost();
         }
 
         private void ApplyDoubletime()
         {
             Bass.ChannelSetAttribute(activeHandle, ChannelAttribute.Tempo, doubletime ? 50 : 0);
+        }
+
+        // TODO: rewrite this shit 
+        private void ApplyNightcore()
+        {
+            // tempo
+            Bass.ChannelSetAttribute(activeHandle, ChannelAttribute.Tempo, nightcore ? 30 : 0);
+            // pitch
+            Bass.ChannelSetAttribute(activeHandle, ChannelAttribute.Pitch, nightcore ? 3.5d : 0d);
+            // bass
+            Bass.ChannelRemoveFX(activeHandle, fx3);
+            if (nightcore)
+            {
+                var parameters = new DXParamEQParameters
+                {
+                    fBandwidth = 24f,
+                    fCenter = 80f,
+                    fGain = 6f
+                };
+                fx3 = Bass.ChannelSetFX(activeHandle, EffectType.DXParamEQ, -3);
+                Bass.FXSetParameters(fx3, parameters);
+            }            
         }
 
         private void ApplyBassboost()

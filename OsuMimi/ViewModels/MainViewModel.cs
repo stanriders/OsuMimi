@@ -276,7 +276,8 @@ namespace OsuMimi.ViewModels
 
         private void NightcoreAction(object obj)
         {
-            throw new NotImplementedException();
+            var isdown = (bool)obj;
+            audioplayer.Nightcore = isdown;
         }
 
         private void DoubleTimeAction(object obj)
