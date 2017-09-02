@@ -2,30 +2,33 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:OsuMimi.Controls"
-        Title="MainWindow" Height="800" Width="520" MinWidth="520" MinHeight="330"
+        Title="osu!Mimi" Height="800" Width="520" MinWidth="520" MinHeight="330"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent">
     <Grid Margin="10" Background="White">
         <Grid.Effect>
             <DropShadowEffect BlurRadius="10" Opacity=".5" RenderingBias="Performance" ShadowDepth="2"/>
         </Grid.Effect>
         <Grid.RowDefinitions>
-            <RowDefinition Height="280"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="30"/>
+            <RowDefinition Height="280" x:Name="topRow"/>
+            <RowDefinition Height="*" x:Name="playlistRow"/>
+            <RowDefinition Height="30" x:Name="bottomRow"/>
         </Grid.RowDefinitions>
         
         <!--top grid-->
-        <Grid Grid.Row="0" Background="DarkGray">
+        <Grid x:Name="topGrid" Grid.Row="0" Background="DarkGray">
             <Grid.RowDefinitions>
                 <RowDefinition Height="30"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="80"/>
-                <RowDefinition Height="50"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="20"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="0" x:Name="playlistMaximizeRow"/>
             </Grid.RowDefinitions>
             <!--background-->
-            <Image Grid.Row="0" Grid.RowSpan="4" Source="{Binding BackgroundImage}" Stretch="UniformToFill"
+            <Image Grid.Row="0" Grid.RowSpan="7" Source="{Binding BackgroundImage}" Stretch="UniformToFill"
                    HorizontalAlignment="Center" VerticalAlignment="Center" />
-            <Rectangle Grid.Row="0" Grid.RowSpan="4" Fill="Black" Opacity=".2" />
+            <Rectangle Grid.Row="0" Grid.RowSpan="7" Fill="Black" Opacity=".2" />
             <!--title-->
             <Rectangle Grid.Row="0" Fill="Black" Opacity=".1" />
             <DockPanel Grid.Row="0" Background="Transparent" MouseLeftButtonDown="DockPanel_MouseLeftButtonDown_1">
@@ -40,7 +43,7 @@
                 </StackPanel>
             </DockPanel>
             <!--song name-->
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="1*"/>
                     <RowDefinition Height="1*"/>
@@ -52,7 +55,7 @@
                        TextOptions.TextFormattingMode="Display"/>
             </Grid>
             <!--control buttons-->
-            <StackPanel Grid.Row="2" Height="76" Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Grid.Row="3" Height="76" Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Width="76" Style="{StaticResource ResourceKey=TranspButton}" Command="{Binding PreviousSongCommand}">
                     <Image Source="../Images/left.png"/>
                 </Button>
@@ -63,8 +66,16 @@
                     <Image Source="../Images/right.png"/>
                 </Button>
             </StackPanel>
+            <StackPanel Grid.Row="4" Height="20" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Width="40" Style="{StaticResource ResourceKey=TranspButton}" Command="{Binding ShuffleCommand}">
+                    <Image Source="{Binding ShuffleButtonImage}"/>
+                </Button>
+                <Button Width="40" Style="{StaticResource ResourceKey=TranspButton}" Command="{Binding RepeatCommand}">
+                    <Image Source="{Binding RepeatButtonImage}"/>
+                </Button>
+            </StackPanel>
             <!--position information-->
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="26"/>
                     <RowDefinition Height="16"/>
@@ -98,10 +109,19 @@
                     </local:MimiTrackbar.Triggers>
                 </local:MimiTrackbar>
             </Grid>
+            <Grid Grid.Row="6">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <!--playlistToggle-->
+                <Button Width="76" Height="10" Style="{StaticResource ResourceKey=TranspButton}" Click="ShowPlaylist">
+                    <Image Source="../Images/right.png"/>
+                </Button>
+            </Grid>
         </Grid>
         
         <!--playlist-->
-        <ListBox Grid.Row="1" BorderThickness="0" Style="{StaticResource PlaylistBoxStyle}" ItemsSource="{Binding PlaylistItems}" MouseDoubleClick="ListBox_MouseDoubleClick_1"  >
+        <ListBox x:Name="playlist" Grid.Row="1" BorderThickness="0" Style="{StaticResource PlaylistBoxStyle}" ItemsSource="{Binding PlaylistItems}" MouseDoubleClick="ListBox_MouseDoubleClick_1"  >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <VirtualizingStackPanel VirtualizationMode="Recycling">
@@ -117,12 +137,12 @@
         <!--footer-->
         <StackPanel Grid.Row="3" Orientation="Horizontal">
             <local:MimiButton Picture="../Images/search.png" SaveState="True" Width="30" MouseLeftButtonDown="SearchButton_MouseLeftButtonDown"
-                              Command="{Binding SearchCommand}"/>
-            <local:MimiButton Picture="../Images/random.png" SaveState="True" Width="30" Command="{Binding RandomCommand}"/>
-            <local:MimiButton Picture="../Images/doubletime.png" SaveState="True" Width="30" Command="{Binding DoubleTimeCommand}"/>
-            <local:MimiButton Picture="../Images/nightcore.png" SaveState="True" Width="30" Command="{Binding NightcoreCommand}"/>
-            <local:MimiButton Picture="../Images/bassboost.png" SaveState="True" Width="30" Command="{Binding BassboostCommand}"/>
-            <local:MimiButton Picture="../Images/info.png" Width="30" Command="{Binding InfoCommand}" />
+                              Command="{Binding SearchCommand}" ToolTip="Search"/>
+            <local:MimiButton Picture="../Images/random.png" SaveState="True" Width="30" Command="{Binding RandomCommand}" ToolTip="Random"/>
+            <local:MimiButton Picture="../Images/doubletime.png" SaveState="True" Width="30" Command="{Binding DoubleTimeCommand}" ToolTip="Double Time"/>
+            <local:MimiButton Picture="../Images/nightcore.png" SaveState="True" Width="30" Command="{Binding NightcoreCommand}" ToolTip="Nightcore"/>
+            <local:MimiButton Picture="../Images/bassboost.png" SaveState="True" Width="30" Command="{Binding BassboostCommand}" ToolTip="Bassboost"/>
+            <local:MimiButton Picture="../Images/info.png" Width="30" Command="{Binding InfoCommand}" ToolTip="Information"/>
         </StackPanel>
 
         <!--search-->

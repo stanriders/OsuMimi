@@ -28,7 +28,12 @@ namespace OsuMimi.ViewModels
         private string totalTime;
         private double currentPosition;
         private ImageSource playButtonImage;
+        private ImageSource shuffleButtonImage;
+        private ImageSource repeatButtonImage;
         private ImageSource backgroundImage;
+
+        private bool isShuffling = false;
+        private bool isRepeating = false;
 
         /// <summary>
         /// Текущий исполнитель
@@ -126,6 +131,8 @@ namespace OsuMimi.ViewModels
         /// </summary>
         public ObservableCollection<PlaylistItem> PlaylistItems { get; set; }
 
+        public PlaylistItem CurrentSong { get; set; }
+
         /// <summary>
         /// Включить предыдущую песню
         /// </summary>
@@ -181,6 +188,53 @@ namespace OsuMimi.ViewModels
         /// </summary>
         public RelayCommand InfoCommand { get; set; }
 
+        public RelayCommand ShuffleCommand { get; set; }
+        public RelayCommand RepeatCommand { get; set; }
+        public ImageSource ShuffleButtonImage
+        {
+            get { return shuffleButtonImage; }
+            set
+            {
+                shuffleButtonImage = value;
+                OnPropertyChanged("ShuffleButtonImage");
+            }
+        }
+        public ImageSource RepeatButtonImage
+        {
+            get { return repeatButtonImage; }
+            set
+            {
+                repeatButtonImage = value;
+                OnPropertyChanged("RepeatButtonImage");
+            }
+        }
+        private void ShuffleAction(object obj)
+        {
+            if (isShuffling)
+            {
+                ShuffleButtonImage = ImageHelper.LoadFromAssembly("random.png");
+                isShuffling = false;
+            }
+            else
+            {
+                ShuffleButtonImage = ImageHelper.LoadFromAssembly("pause.png");
+                isShuffling = true;
+            }
+        }
+        private void RepeatAction(object obj)
+        {
+            if (isRepeating)
+            {
+                RepeatButtonImage = ImageHelper.LoadFromAssembly("play.png");
+                isRepeating = false;
+            }
+            else
+            {
+                RepeatButtonImage = ImageHelper.LoadFromAssembly("pause.png");
+                isRepeating = true;
+            }
+        }
+
         public MainViewModel()
         {
             LoadCommands();
@@ -214,6 +268,8 @@ namespace OsuMimi.ViewModels
         private void LoadCommands()
         {
             SearchCommand = new RelayCommand((a) => { });
+            ShuffleCommand = new RelayCommand(ShuffleAction);
+            RepeatCommand = new RelayCommand(RepeatAction);
             PreviousSongCommand = new RelayCommand(PreviousSongAction);
             NextSongCommand = new RelayCommand(NextSongAction);
             PlaySongCommand = new RelayCommand(PlaySongAction);
@@ -223,23 +279,27 @@ namespace OsuMimi.ViewModels
             DoubleTimeCommand = new RelayCommand(DoubleTimeAction);
             NightcoreCommand = new RelayCommand(NightcoreAction);
             BassboostCommand = new RelayCommand(BassboostAction);
+
+            PlayButtonImage = ImageHelper.LoadFromAssembly("play.png");
+            ShuffleButtonImage = ImageHelper.LoadFromAssembly("random.png");
+            RepeatButtonImage = ImageHelper.LoadFromAssembly("play.png");
         }
 
         private void PreviousSongAction(object obj)
         {
-            throw new NotImplementedException();
+            PreviousSong();
         }
 
         private void NextSongAction(object obj)
         {
-            throw new NotImplementedException();
+            NextSong();
         }
 
         private void PlaySongAction(object obj)
         {
             if (audioplayer.Status == PlayerStatus.NoFile)
             {
-                return;
+                PlaySong(PlaylistItems[0]);
             }
             else if (audioplayer.Status == PlayerStatus.Pause)
             {
@@ -293,7 +353,25 @@ namespace OsuMimi.ViewModels
 
         void audioplayer_OnTrackEnd(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            if (isRepeating)
+                PlaySong(CurrentSong);
+            else
+                NextSong();
+        }
+
+        private void PreviousSong()
+        {
+            int prevTrack = CurrentSong.Index - 1;
+            PlaySong(PlaylistItems[prevTrack]);
+        }
+
+        private void NextSong()
+        {
+            int nextTrack = CurrentSong.Index + 1;
+            if (isShuffling)
+                nextTrack = new Random().Next(PlaylistItems.Count);
+
+            PlaySong(PlaylistItems[nextTrack]);
         }
 
         private void PlaySong(PlaylistItem song)
@@ -306,7 +384,11 @@ namespace OsuMimi.ViewModels
             string bgFile = ImageHelper.GetBackgroundName(PathHelper.SCombine(song.Directory, song.OsuFile));
             if (System.IO.File.Exists(PathHelper.SCombine(song.Directory, bgFile)))
                 BackgroundImage = ImageHelper.LoadFromFile(PathHelper.SCombine(song.Directory, bgFile));
+            else
+                BackgroundImage = null;
             TotalTime = audioplayer.Duration.ToString(@"hh\:mm\:ss");
+            song.IsCurrent = true;
+            CurrentSong = song;
         }
 
         private void LoadPlaylist()

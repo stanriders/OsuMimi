@@ -13,6 +13,7 @@ namespace OsuMimi
 {
     public partial class MainWindow : Window
     {
+        private bool isPlaylistShown = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -36,8 +37,49 @@ namespace OsuMimi
             Environment.Exit(0);
         }
 
+        private void Maximize()
+        {
+            isPlaylistShown = false;
+            if (WindowState == WindowState.Normal)
+            {
+                this.WindowState = System.Windows.WindowState.Maximized;
+                playlistRow.Height = new GridLength(0, GridUnitType.Star);
+                topRow.Height = new GridLength(1, GridUnitType.Star);
+                playlistMaximizeRow.Height = new GridLength(10, GridUnitType.Pixel);
+                bottomRow.Height = new GridLength(0, GridUnitType.Star);
+            }
+            else
+            {
+                this.WindowState = System.Windows.WindowState.Normal;
+                playlistRow.Height = new GridLength(1, GridUnitType.Star);
+                topRow.Height = new GridLength(280, GridUnitType.Pixel);
+                playlistMaximizeRow.Height = new GridLength(0, GridUnitType.Pixel);
+                bottomRow.Height = new GridLength(30, GridUnitType.Pixel);
+            }
+        }
+
+        private void ShowPlaylist(object sender, RoutedEventArgs e)
+        {
+            if (isPlaylistShown)
+            {
+                playlistRow.Height = new GridLength(0, GridUnitType.Star);
+                topRow.Height = new GridLength(1, GridUnitType.Star);
+                bottomRow.Height = new GridLength(0, GridUnitType.Star);
+                isPlaylistShown = false;
+            }
+            else
+            {
+                playlistRow.Height = new GridLength(40, GridUnitType.Star);
+                topRow.Height = new GridLength(60, GridUnitType.Star);
+                bottomRow.Height = new GridLength(30, GridUnitType.Pixel);
+                isPlaylistShown = true;
+            }
+        }
         private void DockPanel_MouseLeftButtonDown_1(object sender, MouseButtonEventArgs e)
         {
+            if (e.ClickCount == 2)
+                Maximize();
+
             this.DragMove();
             base.OnMouseLeftButtonDown(e);
         }
