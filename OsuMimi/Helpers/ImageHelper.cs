@@ -40,6 +40,7 @@ namespace OsuMimi.Helpers
             image.CacheOption = BitmapCacheOption.OnLoad;
             image.UriSource = uri;
             image.EndInit();
+            image.Freeze();
 
             return image;
         }

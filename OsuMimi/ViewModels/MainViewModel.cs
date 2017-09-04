@@ -14,6 +14,7 @@ using OsuMimi.Helpers;
 using OsuMimi.Core.OsuDatabase;
 using OsuMimi.Models;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace OsuMimi.ViewModels
 {
@@ -381,11 +382,18 @@ namespace OsuMimi.ViewModels
             audioplayer.OpenFile(Helpers.PathHelper.SCombine(song.Directory, song.Audiofile));
             audioplayer.Play();
             PlayButtonImage = ImageHelper.LoadFromAssembly("pause.png");
+
             string bgFile = ImageHelper.GetBackgroundName(PathHelper.SCombine(song.Directory, song.OsuFile));
             if (System.IO.File.Exists(PathHelper.SCombine(song.Directory, bgFile)))
-                BackgroundImage = ImageHelper.LoadFromFile(PathHelper.SCombine(song.Directory, bgFile));
+            {
+                Dispatcher.CurrentDispatcher.Invoke(() => BackgroundImage = ImageHelper.LoadFromFile(PathHelper.SCombine(song.Directory, bgFile)));
+                //BackgroundImage = ImageHelper.LoadFromFile(PathHelper.SCombine(song.Directory, bgFile));
+            }
             else
+            {
                 BackgroundImage = null;
+            }
+
             TotalTime = audioplayer.Duration.ToString(@"hh\:mm\:ss");
             song.IsCurrent = true;
             CurrentSong = song;

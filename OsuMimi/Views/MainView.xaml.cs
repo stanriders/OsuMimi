@@ -8,6 +8,7 @@ using System.Windows.Input;
 using OsuMimi.ViewModels;
 using System.Windows.Threading;
 using OsuMimi.Extensions;
+using System.Diagnostics;
 
 namespace OsuMimi
 {
@@ -23,6 +24,9 @@ namespace OsuMimi
 
         void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
+            if (Debugger.IsAttached)
+                Debugger.Break();
+
             MessageBox.Show
             (
                "Fatal error: {0}".Fmt(e.Exception.Message),
